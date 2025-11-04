@@ -23,8 +23,21 @@ input, textarea {
 
 button {
   padding: 8px 12px;
-  background-color: #007bff;
+  background-color: #000000;
   color: white;
   border: none;
   cursor: pointer;
+}
+.juegos-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.juego-card {
+  background-color: #fff;
+  border: 1px solid #7e0000;
+  padding: 15px;
+  width: 250px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
 }

@@ -1,37 +1,81 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 const JuegoForm = () => {
-  const [juego, setJuego] = useState({
-    titulo: '',
-    plataforma: '',
-    genero: '',
-    lanzamiento: ''
-  });
-
-  const handleChange = (e) => {
-    setJuego({ ...juego, [e.target.name]: e.target.value });
-  };
+  const [titulo, setTitulo] = useState('');
+  const [plataforma, setPlataforma] = useState('');
+  const [genero, setGenero] = useState('');
+  const [lanzamiento, setLanzamiento] = useState('');
+  const [mensaje, setMensaje] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('http://localhost:3000/juegos', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(juego)
-    });
-    const data = await res.json();
-console.log('Juego guardado:', JSON.stringify(data, null, 2));
-    setJuego({ titulo: '', plataforma: '', genero: '', lanzamiento: '' });
+
+    // Validación básica
+    if (!titulo || !plataforma || !genero || !lanzamiento) {
+      setMensaje('❌ Todos los campos son obligatorios.');
+      return;
+    }
+
+    const nuevoJuego = { titulo, plataforma, genero, lanzamiento };
+
+    try {
+      const res = await fetch('http://localhost:3000/juegos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(nuevoJuego)
+      });
+
+      if (!res.ok) throw new Error('Error al guardar juego');
+
+      setMensaje('✅ Juego guardado exitosamente.');
+      setTitulo('');
+      setPlataforma('');
+      setGenero('');
+      setLanzamiento('');
+    } catch (error) {
+      console.error('❌ Error al guardar juego:', error);
+      setMensaje('❌ Error al guardar el juego.');
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} style={{ marginBottom: '2rem' }}>
       <h2>Agregar nuevo juego</h2>
-      <input name="titulo" value={juego.titulo} onChange={handleChange} placeholder="Título" />
-      <input name="plataforma" value={juego.plataforma} onChange={handleChange} placeholder="Plataforma" />
-      <input name="genero" value={juego.genero} onChange={handleChange} placeholder="Género" />
-      <input name="lanzamiento" value={juego.lanzamiento} onChange={handleChange} placeholder="Lanzamiento (YYYY-MM-DD)" />
-      <button type="submit">Guardar</button>
+
+      <input
+        type="text"
+        placeholder="Título"
+        value={titulo}
+        onChange={e => setTitulo(e.target.value)}
+        required
+      />
+      <br />
+      <input
+        type="text"
+        placeholder="Plataforma"
+        value={plataforma}
+        onChange={e => setPlataforma(e.target.value)}
+        required
+      />
+      <br />
+      <input
+        type="text"
+        placeholder="Género"
+        value={genero}
+        onChange={e => setGenero(e.target.value)}
+        required
+      />
+      <br />
+      <input
+        type="date"
+        value={lanzamiento}
+        onChange={e => setLanzamiento(e.target.value)}
+        required
+      />
+      <br />
+      <button type="submit">Guardar juego</button>
+
+      {mensaje && <p>{mensaje}</p>}
     </form>
   );
 };

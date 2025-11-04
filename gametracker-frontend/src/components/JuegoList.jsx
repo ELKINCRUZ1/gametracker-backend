@@ -1,28 +1,28 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import JuegoCard from './JuegoCard';
 
-const JuegoList = () => {
+function JuegoList() {
   const [juegos, setJuegos] = useState([]);
 
   useEffect(() => {
-    const fetchJuegos = async () => {
-      const res = await fetch('http://localhost:3000/juegos');
-      const data = await res.json();
-      setJuegos(data);
-    };
-    fetchJuegos();
+    fetch('/juegos')
+      .then(res => res.json())
+      .then(data => setJuegos(data))
+      .catch(err => console.error('Error al cargar juegos:', err));
   }, []);
 
   return (
     <div>
-      <h2>Juegos guardados</h2>
-      <div className="juegos-container">
-        {juegos.map(juego => (
+      <h2>Lista de Juegos</h2>
+      {juegos.length === 0 ? (
+        <p>No hay juegos disponibles.</p>
+      ) : (
+        juegos.map(juego => (
           <JuegoCard key={juego._id} juego={juego} />
-        ))}
-      </div>
+        ))
+      )}
     </div>
   );
-};
+}
 
 export default JuegoList;
